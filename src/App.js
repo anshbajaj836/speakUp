@@ -1,23 +1,70 @@
-import logo from './logo.svg';
-import './App.css';
+// import React from "react";
+import React, { useEffect, useRef } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
+import "./App.css";
+import Feed from "./components/feed/Feed";
+import Login from "./components/Login/Login";
+import Sidebar from "./components/Sidebar/Sidebar";
+import Widgets from "./components/Widgets/Widgets";
+import db, { auth } from "./firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import SinglePost from "./components/SinglePost/SinglePost";
 
 function App() {
+  const [user] = useAuthState(auth);
+  const input = useRef(null);
+
+  useEffect(() => {
+    if (user) {
+      db.collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            email: user.email || user.providerData[0].email,
+            uid: user.uid,
+            photoURL: user.photoURL,
+          },
+          { merge: true }
+        );
+    }
+  }, [user]);
+
+  if (!user) {
+    return (
+      <>
+        <Router>
+          <Switch>
+            <Route path="/">
+              <Login />
+            </Route>
+          </Switch>
+        </Router>
+      </>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    // BEM naming convention
+    <div className="app">
+      <>
+        <Router>
+          <Switch>
+            <Route path="/tweet/:id">
+              <SinglePost />
+            </Route>
+            <Route path="/">
+              <Sidebar input={input} />
+              <Feed input={input} />
+              <Widgets />
+            </Route>
+          </Switch>
+        </Router>
+      </>
     </div>
   );
 }

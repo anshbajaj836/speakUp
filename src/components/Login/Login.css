@@ -1,0 +1,25 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--twitter-dim-background);
+    flex: 1;
+    height: 100vh;
+  }
+  
+  .login__logo {
+    object-fit: contain;
+    height: 300px;
+  }
+  
+  .login__loginButtons {
+    width: 50%;
+  }
+  
+  @media (min-width: 800px) {
+    .login__loginButtons {
+      width: 30%;
+    }
+  }
+  
